@@ -9,7 +9,7 @@ using UnityEditor.ProjectWindowCallback;
 
 
 
-namespace FPRenderNamespace
+namespace GCO.FP
 {
     /// <summary>
     /// This class is responsible for actually creating and initializing assets to plug into unities rendering pipeline.
@@ -17,17 +17,17 @@ namespace FPRenderNamespace
     public class FPRenderPipelineAsset : RenderPipelineAsset
     {
 		//create a variable that holds a color.  This can be set via the editor.
-        public Color color;
+        public Color Color;
 
         public static List<FPRenderComponent> ListOfRenderComponent = new List<FPRenderComponent>();
 
         //if we are working in the unity editor
-#if UNITY_EDITOR
-        /// <summary>
-        /// This us setup to run when the menue item is clicked.  It creates an instance of our FPPipelineAsset.
-        /// It uses CreateFPPipelineAsset to accomplish this.
-        /// </summary>
-        [MenuItem("Assets/Create/Food Processor Rendering/Render Pipeline Asset")]//create a menue item
+        #if UNITY_EDITOR
+            /// <summary>
+            /// This us setup to run when the menue item is clicked.  It creates an instance of our FPPipelineAsset.
+            /// It uses CreateFPPipelineAsset to accomplish this.
+            /// </summary>
+            [MenuItem("Assets/Create/Food Processor Rendering/Render Pipeline Asset")]//create a menue item
 	        public static void MenuCreateFPRenderAsset()//that runs this function
 	        {
 
@@ -60,7 +60,7 @@ namespace FPRenderNamespace
                 FPRenderPipelineAsset instance = CreateInstance<FPRenderPipelineAsset>();
 
 				//we default the color to black
-                instance.color = Color.black;
+                instance.Color = Color.black;
 
 				//I don't know what this paths to.
                 AssetDatabase.CreateAsset(instance, pathName);
