@@ -1,0 +1,4 @@
+sceneSetups:
+- path: Assets/FP Render Pipeline/Scenes/general/default.unity
+  isLoaded: 1
+  isActive: 1
