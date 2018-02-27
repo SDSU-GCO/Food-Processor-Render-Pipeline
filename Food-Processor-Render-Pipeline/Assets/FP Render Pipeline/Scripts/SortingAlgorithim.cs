@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using Unity.Collections;
+using System.Collections.Generic;
 using Unity.Jobs;
 
 class SortingAlgorithim : MonoBehaviour
 {
-    struct EncodedData
+    public struct EncodedData
     {
         public int key;
         public GameObject reference;
@@ -34,7 +35,7 @@ class SortingAlgorithim : MonoBehaviour
         [ReadOnly]
         public int pass;//pass
 
-        void Initialize()
+        public void Initialize()
         {
             theBitShift = bitShift;
             digits = getDigits(theBitShift);
@@ -58,7 +59,6 @@ class SortingAlgorithim : MonoBehaviour
         // The code actually running on the job
         public void Execute()
         {
-            Initialize();
             // Move the positions based on delta time and velocity
             for (int i = 0; i < digits; i++)//this gets multithreaded
             {
@@ -110,11 +110,14 @@ class SortingAlgorithim : MonoBehaviour
         }
     }
 
-    public void Update()
+    /// <summary>
+    /// with the defults this will consume about 16MB of memory per 500 GameObjects and 4096 digits/possible threads(this results from the bitshift of 12)
+    /// At a bitshift = 16 it consumes about 250MB of memory per 500 GameObjects, and so on, so do be carefull altering these values carelessly as the memory costs
+    /// increase at a rate of numberOfMegaBytes=(2^bitShift * numberOfGameObjects * 8 / 1024 / 1024)  To calculate the number of threads simply use 2^bitShift
+    /// </summary>
+    public void Run(List<EncodedData> theValues, int bitShift = 12)
     {
-        //varaibles
-        int bitShift = 16;
-        int capacity = 500;
+        int capacity = theValues.Count;
 
         //put the data in a native array here:
         //====================================
@@ -122,17 +125,18 @@ class SortingAlgorithim : MonoBehaviour
         for (var i = 0; i < theData.Length; i++)
         {
             EncodedData temp = new EncodedData();
-            temp.key = 0;
-            temp.reference = null;
+            temp.key = theValues[i].key;
+            temp.reference = theValues[i].reference;
             theData[i] = temp;
         }
         //====================================
 
+        //we should really rewrite this as a NativeArray of LinkedLists later(to fix memory issues and the lengthy time to read a bunch of nulls in reset for th next pass)
         NativeArray<EncodedData> BucketsArray = new NativeArray<EncodedData>(getDigits(bitShift) * capacity, Allocator.Persistent);
 
 
         //start alorithm here
-        for (int pass = 0; pass < bitShift; pass++)//can't multithread due to being last pass dependent(need to rebuild data with finalise())
+        for (int pass = 0; pass < getDigits(bitShift); pass++)//can't multithread due to being last pass dependent(need to rebuild data with finalise())
         {
             // Initialize the job data
             var job = new RadixCountingSortJob()
@@ -144,6 +148,8 @@ class SortingAlgorithim : MonoBehaviour
                 pass = pass,
             };
 
+            job.Initialize();
+
             // Schedule the job, returns the JobHandle which can be waited upon later on
             JobHandle jobHandle = job.Schedule();
 
@@ -154,11 +160,20 @@ class SortingAlgorithim : MonoBehaviour
             jobHandle.Complete();
 
             //Debug.Log(job.bucketsData[0]);
+
             resetForNextPass(theData, BucketsArray);
         }//end algorithim
 
-
-        
+        //remove the data from the native array here:
+        //====================================
+        for (var i = 0; i < theData.Length; i++)
+        {
+            EncodedData temp = new EncodedData();
+            temp.key = theValues[i].key;
+            temp.reference = theValues[i].reference;
+            theData[i] = temp;
+        }
+        //====================================
 
         // Native arrays must be disposed manually
         BucketsArray.Dispose();
