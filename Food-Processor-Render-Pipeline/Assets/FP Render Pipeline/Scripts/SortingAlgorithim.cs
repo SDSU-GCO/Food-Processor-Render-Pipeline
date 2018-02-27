@@ -3,13 +3,25 @@ using Unity.Collections;
 using System.Collections.Generic;
 using Unity.Jobs;
 
+
+public struct EncodedData
+{
+    public int key;
+    public GameObject reference;
+}
+
+public struct LLContainer
+{
+    public LinkedList<EncodedData> anotherLinkedList;
+
+    public void Initialize()
+    {
+        anotherLinkedList = new LinkedList<EncodedData>();
+    }
+}
+
 class SortingAlgorithim : MonoBehaviour
 {
-    public struct EncodedData
-    {
-        public int key;
-        public GameObject reference;
-    }
 
     struct RadixCountingSortJob : IJob
     {
@@ -26,7 +38,7 @@ class SortingAlgorithim : MonoBehaviour
         public NativeArray<EncodedData> encodedData;// = new NativeArray<ref>(capacity, Allocator.Persistent);
 
         // By default containers are assumed to be read & write
-        public NativeArray<lLContainer> bucketsData;// = new NativeArray<lLContainer>(digits, Allocator.Persistent);
+        public NativeArray<LLContainer> bucketsData;// = new NativeArray<lLContainer>(digits, Allocator.Persistent);
 
         [ReadOnly]
         private int theBitShift;
@@ -38,10 +50,10 @@ class SortingAlgorithim : MonoBehaviour
         public void Initialize()
         {
             theBitShift = bitShift;
-            digits = getDigits(theBitShift);
+            digits = GetDigits(theBitShift);
         }
 
-        int getDigits(int theBitShift)
+        int GetDigits(int theBitShift)
         {
             int digits = 1;
             for (int i = 0; i < theBitShift; i++)
@@ -80,7 +92,7 @@ class SortingAlgorithim : MonoBehaviour
     }
 
 
-    int getDigits(int theBitShift)
+    int GetDigits(int theBitShift)
     {
         int digits = 1;
         for (int i = 0; i < theBitShift; i++)
@@ -90,7 +102,7 @@ class SortingAlgorithim : MonoBehaviour
         return digits;
     }
 
-    private void resetForNextPass(NativeArray<EncodedData> theData, NativeArray<lLContainer> BucketsArray)
+    private void ResetForNextPass(NativeArray<EncodedData> theData, NativeArray<LLContainer> BucketsArray)
     {
         int theDataIndex = 0;
         for(int theBucket = 0; theBucket < BucketsArray.Length; theBucket++)
@@ -109,14 +121,29 @@ class SortingAlgorithim : MonoBehaviour
         }
     }
 
-    public struct lLContainer
-    {
-        public LinkedList<EncodedData> anotherLinkedList;
 
-        public void Initialize()
+    private void Update()
+    {
+        List<EncodedData> someList = new List<EncodedData>();
+        for(int i = 0; i< 100000; i++)
         {
-            anotherLinkedList = new LinkedList<EncodedData>();
+            EncodedData temp = new EncodedData
+            {
+                key = Random.Range(0, int.MaxValue),
+                reference = null
+            };
+            someList.Add(temp);
         }
+        Run(someList);
+
+
+        foreach (EncodedData encodedData in someList)
+        {
+            print(" " + encodedData.key);
+            Debug.LogError(" " + encodedData.key);
+            Debug.Log(" " + encodedData.key);
+        }
+
     }
 
     /// <summary>
@@ -127,22 +154,24 @@ class SortingAlgorithim : MonoBehaviour
     public void Run(List<EncodedData> theValues, int bitShift = 12)
     {
         int capacity = theValues.Count;
-        int digits = getDigits(bitShift);
+        int digits = GetDigits(bitShift);
 
         //put the data in a native array here:
         //====================================
         NativeArray<EncodedData> theData = new NativeArray<EncodedData>(capacity, Allocator.Persistent);
         for (var i = 0; i < theData.Length; i++)
         {
-            EncodedData temp = new EncodedData();
-            temp.key = theValues[i].key;
-            temp.reference = theValues[i].reference;
+            EncodedData temp = new EncodedData
+            {
+                key = theValues[i].key,
+                reference = theValues[i].reference
+            };
             theData[i] = temp;
         }
         //====================================
 
         //we should really rewrite this as a NativeArray of LinkedLists later(to fix memory issues and the lengthy time to read a bunch of nulls in reset for th next pass)
-        NativeArray<lLContainer> BucketsArray = new NativeArray<lLContainer>(digits, Allocator.Persistent);
+        NativeArray<LLContainer> BucketsArray = new NativeArray<LLContainer>(digits, Allocator.Persistent);
         for(int i = 0; i<digits; i++)
         {
             BucketsArray[i].Initialize();
@@ -150,7 +179,7 @@ class SortingAlgorithim : MonoBehaviour
 
 
         //start alorithm here
-        for (int pass = 0; pass < getDigits(bitShift); pass++)//can't multithread due to being last pass dependent(need to rebuild data with finalise())
+        for (int pass = 0; pass < GetDigits(bitShift); pass++)//can't multithread due to being last pass dependent(need to rebuild data with finalise())
         {
             // Initialize the job data
             var job = new RadixCountingSortJob()
@@ -175,19 +204,22 @@ class SortingAlgorithim : MonoBehaviour
 
             //Debug.Log(job.bucketsData[0]);
 
-            resetForNextPass(theData, BucketsArray);
+            ResetForNextPass(theData, BucketsArray);
         }//end algorithim
 
         //remove the data from the native array here:
         //====================================
         for (var i = 0; i < theData.Length; i++)
         {
-            EncodedData temp = new EncodedData();
-            temp.key = theValues[i].key;
-            temp.reference = theValues[i].reference;
+            EncodedData temp = new EncodedData
+            {
+                key = theValues[i].key,
+                reference = theValues[i].reference
+            };
             theData[i] = temp;
         }
         //====================================
+
 
         // Native arrays must be disposed manually
         BucketsArray.Dispose();
