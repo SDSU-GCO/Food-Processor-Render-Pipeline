@@ -26,7 +26,7 @@ class SortingAlgorithim : MonoBehaviour
         public NativeArray<EncodedData> encodedData;// = new NativeArray<ref>(capacity, Allocator.Persistent);
 
         // By default containers are assumed to be read & write
-        public NativeArray<EncodedData> bucketsData;// = new NativeArray<ref>(digits * capacity, Allocator.Persistent);
+        public NativeArray<lLContainer> bucketsData;// = new NativeArray<lLContainer>(digits, Allocator.Persistent);
 
         [ReadOnly]
         private int theBitShift;
@@ -70,15 +70,8 @@ class SortingAlgorithim : MonoBehaviour
 
                     if (newKey % digits == i)
                     {
-                        bucketsData[i * location] = encodedData[j];
+                        bucketsData[i].anotherLinkedList.AddLast(encodedData[j]);
                         location++;
-                    }
-                    else
-                    {
-                        EncodedData temp = new EncodedData();
-                        temp.key = 0;
-                        temp.reference = null;
-                        bucketsData[i * location] = temp;
                     }
                 }
             }
@@ -97,16 +90,32 @@ class SortingAlgorithim : MonoBehaviour
         return digits;
     }
 
-    private void resetForNextPass(NativeArray<EncodedData> theData, NativeArray<EncodedData> BucketsArray)
+    private void resetForNextPass(NativeArray<EncodedData> theData, NativeArray<lLContainer> BucketsArray)
     {
-        for (int i = 0; i< BucketsArray.Length; i++)
+        int theDataIndex = 0;
+        for(int theBucket = 0; theBucket < BucketsArray.Length; theBucket++)
         {
-            int tracker=0;
-            if (BucketsArray[i].reference != null)
+            
+            EncodedData[] tempArray = new EncodedData[BucketsArray[theBucket].anotherLinkedList.Count];
+            BucketsArray[theBucket].anotherLinkedList.CopyTo(tempArray, 0);
+            
+            for(int j = 0; j < tempArray.Length; j++)
             {
-                theData[tracker] = BucketsArray[i];
-                tracker++;
+                theData[j + theDataIndex] = tempArray[j];
             }
+            
+
+            theDataIndex += tempArray.Length;
+        }
+    }
+
+    public struct lLContainer
+    {
+        public LinkedList<EncodedData> anotherLinkedList;
+
+        public void Initialize()
+        {
+            anotherLinkedList = new LinkedList<EncodedData>();
         }
     }
 
@@ -118,6 +127,7 @@ class SortingAlgorithim : MonoBehaviour
     public void Run(List<EncodedData> theValues, int bitShift = 12)
     {
         int capacity = theValues.Count;
+        int digits = getDigits(bitShift);
 
         //put the data in a native array here:
         //====================================
@@ -132,7 +142,11 @@ class SortingAlgorithim : MonoBehaviour
         //====================================
 
         //we should really rewrite this as a NativeArray of LinkedLists later(to fix memory issues and the lengthy time to read a bunch of nulls in reset for th next pass)
-        NativeArray<EncodedData> BucketsArray = new NativeArray<EncodedData>(getDigits(bitShift) * capacity, Allocator.Persistent);
+        NativeArray<lLContainer> BucketsArray = new NativeArray<lLContainer>(digits, Allocator.Persistent);
+        for(int i = 0; i<digits; i++)
+        {
+            BucketsArray[i].Initialize();
+        }
 
 
         //start alorithm here
