@@ -4,10 +4,53 @@ using System.Collections.Generic;
 using Unity.Jobs;
 
 
+struct UnsafeLinkedListNode<T>
+{
+    public T value;
+    unsafe public UnsafeLinkedListNode<T>* next;
+    unsafe public UnsafeLinkedListNode<T>* prev;
+}
+
+class UnsafeLinkedList<T>
+{
+
+    unsafe public UnsafeLinkedListNode<T>* head = null;
+    unsafe public UnsafeLinkedListNode<T>* tail = null;
+    public ulong count { get; private set; }
+    public void AddAfter(T value)
+    {
+        UnsafeLinkedList<T> temp = new UnsafeLinkedList<T>();
+        temp.value = value;
+        AddAfter(temp);
+    }
+    public void AddAfter(UnsafeLinkedListNode<T>* value)
+    {
+        unsafe
+        {
+            if(head !=null)
+            {
+                *value.prev = tail;
+                *value.next = null;
+                tail.next = T;
+                count++;
+                
+            }
+            else
+            {
+                *value.next = null;
+                *value.prev = null;
+                head = value;
+                tail = value;
+                count++;
+            }
+        }
+    }
+}
+
 public struct EncodedData
 {
     public int key;
-    public GameObject reference;
+    public unsafe long* reference;
 }
 
 public struct LLContainer
@@ -29,7 +72,7 @@ class SortingAlgorithim : MonoBehaviour
         // By declaring it as read only, multiple jobs are allowed to access the data in parallel
 
         [ReadOnly]
-        public int capacity;//number of elements
+        public int capacity;//number of elements(n)
         [ReadOnly]
         public int bitShift;
 
@@ -78,6 +121,7 @@ class SortingAlgorithim : MonoBehaviour
                 for (int j = 0; j < encodedData.Length; j++)//can't multithread due to being last pass dependent(location variable needed)
                 {
                     int newKey = encodedData[j].key;
+
                     newKey = newKey >> (theBitShift * (pass + 1));
 
                     if (newKey % digits == i)
@@ -127,12 +171,15 @@ class SortingAlgorithim : MonoBehaviour
         List<EncodedData> someList = new List<EncodedData>();
         for(int i = 0; i< 100000; i++)
         {
-            EncodedData temp = new EncodedData
+            unsafe
             {
-                key = Random.Range(0, int.MaxValue),
-                reference = null
-            };
-            someList.Add(temp);
+                EncodedData temp = new EncodedData
+                {
+                    key = Random.Range(0, int.MaxValue),
+                    reference = null,
+                };
+                someList.Add(temp);
+            }
         }
         Run(someList);
 
@@ -151,7 +198,7 @@ class SortingAlgorithim : MonoBehaviour
     /// At a bitshift = 16 it consumes about 250MB of memory per 500 GameObjects, and so on, so do be carefull altering these values carelessly as the memory costs
     /// increase at a rate of numberOfMegaBytes=(2^bitShift * numberOfGameObjects * 8 / 1024 / 1024)  To calculate the number of threads simply use 2^bitShift
     /// </summary>
-    public void Run(List<EncodedData> theValues, int bitShift = 12)
+    public void Run(List<EncodedData> theValues, int bitShift = 3)//three is uese because we are assuming we have 8 cores, we should really detect this somehow later
     {
         int capacity = theValues.Count;
         int digits = GetDigits(bitShift);
@@ -161,12 +208,16 @@ class SortingAlgorithim : MonoBehaviour
         NativeArray<EncodedData> theData = new NativeArray<EncodedData>(capacity, Allocator.Persistent);
         for (var i = 0; i < theData.Length; i++)
         {
-            EncodedData temp = new EncodedData
+            unsafe
             {
-                key = theValues[i].key,
-                reference = theValues[i].reference
-            };
-            theData[i] = temp;
+                EncodedData temp = new EncodedData()
+                {
+                    key = theValues[i].key,
+                    reference = theValues[i].reference,
+                };
+
+                theData[i] = temp;
+            }
         }
         //====================================
 
@@ -211,12 +262,15 @@ class SortingAlgorithim : MonoBehaviour
         //====================================
         for (var i = 0; i < theData.Length; i++)
         {
-            EncodedData temp = new EncodedData
+            unsafe
             {
-                key = theValues[i].key,
-                reference = theValues[i].reference
-            };
-            theData[i] = temp;
+                EncodedData temp = new EncodedData
+                {
+                    key = theValues[i].key,
+                    reference = theValues[i].reference
+                };
+                theData[i] = temp;
+            }
         }
         //====================================
 
