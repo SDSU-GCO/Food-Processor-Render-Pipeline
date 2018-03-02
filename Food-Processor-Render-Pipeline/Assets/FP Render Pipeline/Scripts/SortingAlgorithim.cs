@@ -4,45 +4,56 @@ using System.Collections.Generic;
 using Unity.Jobs;
 
 
-struct UnsafeLinkedListNode<T>
+public struct UnsafeLinkedListNode
 {
-    public T value;
-    unsafe public UnsafeLinkedListNode<T>* next;
-    unsafe public UnsafeLinkedListNode<T>* prev;
+    public EncodedData value;
+    unsafe public UnsafeLinkedListNode* next;
+    unsafe public UnsafeLinkedListNode* prev;
 }
 
-class UnsafeLinkedList<T>
+public class UnsafeLinkedList
 {
 
-    unsafe public UnsafeLinkedListNode<T>* head = null;
-    unsafe public UnsafeLinkedListNode<T>* tail = null;
-    public ulong count { get; private set; }
-    public void AddAfter(T value)
+    unsafe public UnsafeLinkedListNode *head = null;
+    unsafe public UnsafeLinkedListNode *tail = null;
+    public ulong Count { get; private set; }
+    unsafe public void AddLast(EncodedData value)
     {
-        UnsafeLinkedList<T> temp = new UnsafeLinkedList<T>();
-        temp.value = value;
-        AddAfter(temp);
+        UnsafeLinkedListNode temp = new UnsafeLinkedListNode
+        {
+            value = value
+        };
+        AddLast(&temp);
     }
-    public void AddAfter(UnsafeLinkedListNode<T>* value)
+    unsafe public void AddLast(UnsafeLinkedListNode* value)
     {
         unsafe
         {
             if(head !=null)
             {
-                *value.prev = tail;
-                *value.next = null;
-                tail.next = T;
-                count++;
+                value->prev = tail;
+                value->next = null;
+                tail->next = value;
+                Count++;
                 
             }
             else
             {
-                *value.next = null;
-                *value.prev = null;
+                value->next = null;
+                value->prev = null;
                 head = value;
                 tail = value;
-                count++;
+                Count++;
             }
+        }
+    }
+    unsafe public void CopyTo(EncodedData[] theArray, int index)
+    {
+        UnsafeLinkedListNode* currentNode = head;
+        for(int i = 0; i< index; i++)
+        {
+            theArray[i] = currentNode->value;
+            currentNode = currentNode->next;
         }
     }
 }
@@ -55,11 +66,11 @@ public struct EncodedData
 
 public struct LLContainer
 {
-    public LinkedList<EncodedData> anotherLinkedList;
+    public UnsafeLinkedList anotherLinkedList;
 
     public void Initialize()
     {
-        anotherLinkedList = new LinkedList<EncodedData>();
+        anotherLinkedList = new UnsafeLinkedList();
     }
 }
 
