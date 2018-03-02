@@ -6,19 +6,28 @@ using Unity.Jobs;
 //Alex: please note a lot of the math in the comments might be wrong, but the code whould be right.  I was dead tired writing this and got 
 //Alex: logbase(2)n confused with (2^n) ...  #quikMafs
 
-public struct UnsafeLinkedListNode
+
+
+unsafe public struct UnsafeLinkedListNode
 {
     public EncodedData value;
     unsafe public UnsafeLinkedListNode* next;
     unsafe public UnsafeLinkedListNode* prev;
 }
 
-public class UnsafeLinkedList
+public struct UnsafeLinkedList
 {
 
-    unsafe public UnsafeLinkedListNode *head = null;
-    unsafe public UnsafeLinkedListNode *tail = null;
+    unsafe public UnsafeLinkedListNode* head;
+    unsafe public UnsafeLinkedListNode* tail;
     public ulong Count { get; private set; }
+
+    public unsafe void Initialize()
+    {
+        head = null;
+        tail = null;
+    }
+
     unsafe public void AddLast(EncodedData value)
     {
         UnsafeLinkedListNode temp = new UnsafeLinkedListNode
@@ -58,6 +67,14 @@ public class UnsafeLinkedList
             currentNode = currentNode->next;
         }
     }
+
+    unsafe public void DeleteHead()
+    {
+        UnsafeLinkedListNode* temp = head;
+        temp->next->prev = null;
+        head = temp->next;
+        temp->delete();//destroy itself, broken
+    }
 }
 
 public struct EncodedData
@@ -73,6 +90,7 @@ public struct LLContainer
     public void Initialize()
     {
         anotherLinkedList = new UnsafeLinkedList();
+        anotherLinkedList.Initialize();
     }
 }
 
@@ -190,7 +208,7 @@ class SortingAlgorithim : MonoBehaviour
                 EncodedData temp = new EncodedData
                 {
                     key = Random.Range(0, int.MaxValue),
-                    reference = (long*)((GameObject*)nothing),//Alex: broken ATM
+                    reference = &nothing,//Alex: broken ATM
                 };
                 someList.Add(temp);
             }
