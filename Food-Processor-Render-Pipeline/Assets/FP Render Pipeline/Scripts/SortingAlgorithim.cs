@@ -3,6 +3,8 @@ using Unity.Collections;
 using System.Collections.Generic;
 using Unity.Jobs;
 
+//Alex: please note a lot of the math in the comments might be wrong, but the code whould be right.  I was dead tired writing this and got 
+//Alex: logbase(2)n confused with (2^n) ...  #quikMafs
 
 public struct UnsafeLinkedListNode
 {
@@ -79,27 +81,27 @@ class SortingAlgorithim : MonoBehaviour
 
     struct RadixCountingSortJob : IJob
     {
-        // Jobs declare all data that will be accessed in the job
-        // By declaring it as read only, multiple jobs are allowed to access the data in parallel
+        //Alex:  Jobs declare all data that will be accessed in the job
+        //Alex:  By declaring it as read only, multiple jobs are allowed to access the data in parallel
 
         [ReadOnly]
-        public int capacity;//number of elements(n)
+        public int capacity;//Alex: number of elements(n)
         [ReadOnly]
         public int bitShift;
 
 
         [ReadOnly]
-        public NativeArray<EncodedData> encodedData;// = new NativeArray<ref>(capacity, Allocator.Persistent);
+        public NativeArray<EncodedData> encodedData;//Alex:  = new NativeArray<ref>(capacity, Allocator.Persistent);
 
-        // By default containers are assumed to be read & write
-        public NativeArray<LLContainer> bucketsData;// = new NativeArray<lLContainer>(digits, Allocator.Persistent);
+        //Alex:  By default containers are assumed to be read & write
+        public NativeArray<LLContainer> bucketsData;//Alex:  = new NativeArray<lLContainer>(digits, Allocator.Persistent);
 
         [ReadOnly]
         private int theBitShift;
         [ReadOnly]
-        private int digits;//base
+        private int digits;//Alex: base
         [ReadOnly]
-        public int pass;//pass
+        public int pass;//Alex: pass
 
         public void Initialize()
         {
@@ -126,10 +128,10 @@ class SortingAlgorithim : MonoBehaviour
         public void Execute()
         {
             // Move the positions based on delta time and velocity
-            for (int i = 0; i < digits; i++)//this gets multithreaded
+            for (int i = 0; i < digits; i++)//Alex:  this gets multithreaded
             {
                 int location = 0;
-                for (int j = 0; j < encodedData.Length; j++)//can't multithread due to being last pass dependent(location variable needed)
+                for (int j = 0; j < encodedData.Length; j++)//Alex: can't multithread due to being last pass dependent(location variable needed)
                 {
                     int newKey = encodedData[j].key;
 
@@ -188,7 +190,7 @@ class SortingAlgorithim : MonoBehaviour
                 EncodedData temp = new EncodedData
                 {
                     key = Random.Range(0, int.MaxValue),
-                    reference = (long*)((GameObject*)nothing),
+                    reference = (long*)((GameObject*)nothing),//Alex: broken ATM
                 };
                 someList.Add(temp);
             }
@@ -206,17 +208,17 @@ class SortingAlgorithim : MonoBehaviour
     }
 
     /// <summary>
-    /// with the defults this will consume about 16MB of memory per 500 GameObjects and 4096 digits/possible threads(this results from the bitshift of 12)
+    /// Alex: with the defults this will consume about 16MB of memory per 500 GameObjects and 4096 digits/possible threads(this results from the bitshift of 12)
     /// At a bitshift = 16 it consumes about 250MB of memory per 500 GameObjects, and so on, so do be carefull altering these values carelessly as the memory costs
     /// increase at a rate of numberOfMegaBytes=(2^bitShift * numberOfGameObjects * 8 / 1024 / 1024)  To calculate the number of threads simply use 2^bitShift
     /// </summary>
-    public void Run(List<EncodedData> theValues, int bitShift = 3)//three is uese because we are assuming we have 8 cores, we should really detect this somehow later
+    public void Run(List<EncodedData> theValues, int bitShift = 3)//Alex: three is uese because we are assuming we have 8 cores, we should really detect this somehow later
     {
         int capacity = theValues.Count;
         int digits = GetDigits(bitShift);
 
         //put the data in a native array here:
-        //====================================
+        //Alex: ====================================
         NativeArray<EncodedData> theData = new NativeArray<EncodedData>(capacity, Allocator.Persistent);
         for (var i = 0; i < theData.Length; i++)
         {
@@ -231,9 +233,9 @@ class SortingAlgorithim : MonoBehaviour
                 theData[i] = temp;
             }
         }
-        //====================================
+        //Alex: ====================================
 
-        //we should really rewrite this as a NativeArray of LinkedLists later(to fix memory issues and the lengthy time to read a bunch of nulls in reset for th next pass)
+        //Alex: we should really rewrite this as a NativeArray of LinkedLists later(to fix memory issues and the lengthy time to read a bunch of nulls in reset for th next pass)
         NativeArray<LLContainer> BucketsArray = new NativeArray<LLContainer>(digits, Allocator.Persistent);
         for(int i = 0; i<digits; i++)
         {
@@ -241,10 +243,10 @@ class SortingAlgorithim : MonoBehaviour
         }
 
 
-        //start alorithm here
-        for (int pass = 0; pass < GetDigits(bitShift); pass++)//can't multithread due to being last pass dependent(need to rebuild data with finalise())
+        //Alex: start alorithm here
+        for (int pass = 0; pass < GetDigits(bitShift); pass++)//Alex: can't multithread due to being last pass dependent(need to rebuild data with finalise())
         {
-            // Initialize the job data
+            //Alex:  Initialize the job data
             var job = new RadixCountingSortJob()
             {
                 encodedData = theData,
@@ -270,8 +272,8 @@ class SortingAlgorithim : MonoBehaviour
             ResetForNextPass(theData, BucketsArray);
         }//end algorithim
 
-        //remove the data from the native array here:
-        //====================================
+        //Alex: remove the data from the native array here:
+        //Alex: ====================================
         for (var i = 0; i < theData.Length; i++)
         {
             unsafe
@@ -284,7 +286,7 @@ class SortingAlgorithim : MonoBehaviour
                 theData[i] = temp;
             }
         }
-        //====================================
+        //Alex: ====================================
 
 
         // Native arrays must be disposed manually

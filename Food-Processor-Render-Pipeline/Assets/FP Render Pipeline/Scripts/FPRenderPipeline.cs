@@ -72,6 +72,7 @@ namespace GCO.FP
                 }
 
 #if UNITY_EDITOR
+                //This is supposed to make scene icons work like camera and light icons
                 // Emit scene view UI
                 if (camera.cameraType == CameraType.SceneView)
                 {
