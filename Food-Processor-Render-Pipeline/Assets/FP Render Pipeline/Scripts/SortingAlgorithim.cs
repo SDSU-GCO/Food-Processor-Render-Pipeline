@@ -182,12 +182,13 @@ class SortingAlgorithim : MonoBehaviour
         List<EncodedData> someList = new List<EncodedData>();
         for(int i = 0; i< 100000; i++)
         {
+            GameObject nothing = null;
             unsafe
             {
                 EncodedData temp = new EncodedData
                 {
                     key = Random.Range(0, int.MaxValue),
-                    reference = null,
+                    reference = (long*)((GameObject*)nothing),
                 };
                 someList.Add(temp);
             }
