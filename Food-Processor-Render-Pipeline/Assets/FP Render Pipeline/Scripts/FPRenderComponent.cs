@@ -17,6 +17,8 @@ namespace GCO.FP
         //Tyler: Don't allow external mutations.
         public MeshRenderer DefaultUnityMeshRenderer { get; private set; }
 
+
+
         private void OnEnable()
         {
             //update the reference to the current meshRenderer
@@ -25,6 +27,31 @@ namespace GCO.FP
 
             //Alex: add this component to the list
             FPRenderPipelineAsset.ListOfRenderComponent.Add(this);
+
+
+            FPCameraDataLists.FPNoodleData TemporaryFPNoodleData = new FPCameraDataLists.FPNoodleData
+            {
+                index = ,
+                noodle = ,
+            };
+
+            FPCameraDataLists.FPNoodleDataList.Add(TemporaryFPNoodleData);
+
+            FPCameraDataLists.FPCameraStrainerData CurrentFPCameraStrainerData = new FPCameraDataLists.FPCameraStrainerData
+            {
+                bounds = DefaultUnityMeshRenderer.bounds,
+                index = 0,
+                layer = 0,
+                maxBounds = ,
+                minBounds = ,
+                noodlesCount = ,
+                noodlesStart = ,
+                visible = 1,
+            };
+
+            FPCameraDataLists.FPCameraStrainerDataList.Add(CurrentFPCameraStrainerData);
+
+//FPCameraDataLists.FPNoodleDataList;
         }
 
         private void OnDisable()
