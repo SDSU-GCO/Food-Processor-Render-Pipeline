@@ -1,29 +1,36 @@
-Base path: C:/Program Files/Unity/Hub/Editor/2018.1.0b7/Editor/Data
+Base path: C:/Program Files/Unity 2018.1.0b12/Editor/Data
 Cmd: initializeCompiler
 Cmd: compileComputeKernel
-  api=4 insize=4913 outsize=9105 ok=1
+  api=4 insize=15322 outsize=6481 ok=1
 Cmd: compileComputeKernel
-  api=4 insize=9225 outsize=8625 ok=1
+  api=4 insize=15322 outsize=6477 ok=1
 Cmd: compileComputeKernel
-  api=4 insize=1759 outsize=537 ok=1
+  api=4 insize=15322 outsize=9649 ok=1
 Cmd: compileComputeKernel
-  api=4 insize=513 outsize=545 ok=1
+  api=4 insize=15322 outsize=7237 ok=1
 Cmd: compileComputeKernel
-  error: 2 plat 4 at EncodeBC6H.compute(1): failed to open source file: 'CoreRP/ShaderLibrary/Common.hlsl'
-  api=4 insize=1463 outsize=0 ok=0
+  api=4 insize=15322 outsize=7045 ok=1
 Cmd: compileComputeKernel
-  api=4 insize=15203 outsize=5209 ok=1
+  api=4 insize=15322 outsize=8825 ok=1
 Cmd: compileComputeKernel
-  api=4 insize=15203 outsize=6985 ok=1
+  api=4 insize=15322 outsize=8781 ok=1
 Cmd: compileComputeKernel
-  api=4 insize=15203 outsize=7309 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=15203 outsize=6541 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=15203 outsize=8321 ok=1
-Cmd: compileComputeKernel
-  api=4 insize=15203 outsize=10901 ok=1
+  api=4 insize=15322 outsize=11205 ok=1
 Cmd: initializeCompiler
 Cmd: initializeCompiler
-
-Quitting shader compiler process
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler

@@ -90,7 +90,7 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaAO: 1
     m_ShowResolutionOverlay: 1
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_UseShadowmask: 0
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -221,6 +221,7 @@ GameObject:
   - component: {fileID: 744359749}
   - component: {fileID: 744359748}
   - component: {fileID: 744359747}
+  - component: {fileID: 744359751}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -291,6 +292,37 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &744359751
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 744359746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0820a7f520d71b43a2f42d6a0e677b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyName:
+    UseLocalValue: 0
+    LocalValue: Ent
+    reference: {fileID: 11400000, guid: 85e919ce19b90c644b003582cb719fa2, type: 2}
+  enemyHP:
+    UseLocalValue: 0
+    LocalValue: 0
+    reference: {fileID: 11400000, guid: a07176d12222792459a30bd8a8d42dfe, type: 2}
+  defense:
+    UseLocalValue: 0
+    LocalValue: 0
+    reference: {fileID: 11400000, guid: 02b737070dbaac94984a04b0ac85b3e3, type: 2}
+  hitRate:
+    UseLocalValue: 0
+    LocalValue: 0
+    reference: {fileID: 11400000, guid: c726402ba23f91646abac3fceeda7f27, type: 2}
+  acceleration:
+    UseLocalValue: 0
+    LocalValue: {x: 180, y: 90, z: 0}
+    reference: {fileID: 11400000, guid: 5d0cc13f6322a4140aac4fed0b3b119a, type: 2}
 --- !u!1 &988141500
 GameObject:
   m_ObjectHideFlags: 0

@@ -6,8 +6,8 @@ using Unity.Jobs;
 
 public static class FPCameraDataLists
 {
-    public static NativeList<FPCameraStrainerData> FPCameraStrainerDataList = new NativeList<FPCameraStrainerData>();
-    public static NativeList<FPNoodleData> FPNoodleDataList = new NativeList<FPNoodleData>();
+    //public static NativeList<FPCameraStrainerData> FPCameraStrainerDataList = new NativeList<FPCameraStrainerData>();
+    //public static NativeList<FPNoodleData> FPNoodleDataList = new NativeList<FPNoodleData>();
 
     public struct FPCameraStrainerData
     {
@@ -57,11 +57,11 @@ public static class FPCameraDataLists
         public System.Int64 A;
         public System.Int64 B;
 
-        public bool operator>(Key A, Key B)
+        public static bool operator>(Key A, Key B)
         {
             return true;//one for now
         }
-        public bool operator <(Key A, Key B)
+        public static bool operator<(Key A, Key B)
         {
             return false;//one for now
         }

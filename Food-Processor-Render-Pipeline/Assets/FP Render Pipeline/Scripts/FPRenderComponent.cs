@@ -29,29 +29,29 @@ namespace GCO.FP
             FPRenderPipelineAsset.ListOfRenderComponent.Add(this);
 
 
-            FPCameraDataLists.FPNoodleData TemporaryFPNoodleData = new FPCameraDataLists.FPNoodleData
-            {
-                index = ,
-                noodle = ,
-            };
+            //FPCameraDataLists.FPNoodleData TemporaryFPNoodleData = new FPCameraDataLists.FPNoodleData
+            //{
+            //    index = ,
+            //    noodle = ,
+            //};
 
-            FPCameraDataLists.FPNoodleDataList.Add(TemporaryFPNoodleData);
+            //FPCameraDataLists.FPNoodleDataList.Add(TemporaryFPNoodleData);
 
-            FPCameraDataLists.FPCameraStrainerData CurrentFPCameraStrainerData = new FPCameraDataLists.FPCameraStrainerData
-            {
-                bounds = DefaultUnityMeshRenderer.bounds,
-                index = 0,
-                layer = 0,
-                maxBounds = ,
-                minBounds = ,
-                noodlesCount = ,
-                noodlesStart = ,
-                visible = 1,
-            };
+            //FPCameraDataLists.FPCameraStrainerData CurrentFPCameraStrainerData = new FPCameraDataLists.FPCameraStrainerData
+            //{
+            //    bounds = DefaultUnityMeshRenderer.bounds,
+            //    index = 0,
+            //    layer = 0,
+            //    maxBounds = ,
+            //    minBounds = ,
+            //    noodlesCount = ,
+            //    noodlesStart = ,
+            //    visible = 1,
+            //};
 
-            FPCameraDataLists.FPCameraStrainerDataList.Add(CurrentFPCameraStrainerData);
+            //FPCameraDataLists.FPCameraStrainerDataList.Add(CurrentFPCameraStrainerData);
 
-//FPCameraDataLists.FPNoodleDataList;
+            //FPCameraDataLists.FPNoodleDataList;
         }
 
         private void OnDisable()

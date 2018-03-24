@@ -1,18 +1,38 @@
-Base path: C:/Program Files/Unity/Hub/Editor/2018.1.0b7/Editor/Data
+Base path: C:/Program Files/Unity 2018.1.0b12/Editor/Data
 Cmd: initializeCompiler
 Cmd: compileComputeKernel
-  api=4 insize=2023 outsize=341 ok=1
+  api=4 insize=1522 outsize=16081 ok=1
 Cmd: compileComputeKernel
-  api=4 insize=4913 outsize=5373 ok=1
+  api=4 insize=15322 outsize=4705 ok=1
 Cmd: compileComputeKernel
-  api=4 insize=15203 outsize=5593 ok=1
+  api=4 insize=15322 outsize=5209 ok=1
 Cmd: compileComputeKernel
-  api=4 insize=15203 outsize=7297 ok=1
+  api=4 insize=15322 outsize=6289 ok=1
 Cmd: compileComputeKernel
-  api=4 insize=15203 outsize=8293 ok=1
+  api=4 insize=15322 outsize=7373 ok=1
 Cmd: compileComputeKernel
-  api=4 insize=15203 outsize=8245 ok=1
+  api=4 insize=15322 outsize=7309 ok=1
 Cmd: compileComputeKernel
-  api=4 insize=15203 outsize=9917 ok=1
+  api=4 insize=15322 outsize=9953 ok=1
+Cmd: compileComputeKernel
+  api=4 insize=15322 outsize=7949 ok=1
+Cmd: compileComputeKernel
+  api=4 insize=15322 outsize=10901 ok=1
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
 Cmd: initializeCompiler
 Cmd: initializeCompiler

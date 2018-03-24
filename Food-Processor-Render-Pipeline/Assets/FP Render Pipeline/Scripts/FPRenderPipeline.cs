@@ -55,7 +55,7 @@ namespace GCO.FP
             base.Render(renderContext, cameras);
 
             //Tyler: Obtains a CommandBuffer instance from the pool to save on GC pressure.
-            CommandBuffer cb = CommandBufferPool.Get(); //Alex: Obtain CommandBuffer queue from pool.
+            //CommandBuffer cb = CommandBufferPool.Get(); //Alex: Obtain CommandBuffer queue from pool.
 
             //Alex: Call render for a camera?
             //Tyler: Process rendering for each camera in the order provided.
@@ -63,11 +63,11 @@ namespace GCO.FP
             {
                 //Tyler: Sets up Unity's internal camera variables (not well documented) and binds the render target to the camera's target.
                 renderContext.SetupCameraProperties(camera);                 //Alex: Does some interesting things(?)
-                cb.ClearRenderTarget(true, true, AssetReference.Color); //Alex: Set Color.  Tyler: Clear background color to the color in the FP Asset and clear out the depth buffer.
+                //cb.ClearRenderTarget(true, true, AssetReference.Color); //Alex: Set Color.  Tyler: Clear background color to the color in the FP Asset and clear out the depth buffer.
 
                 foreach(FPRenderComponent FPRenderComponent in FPRenderPipelineAsset.ListOfRenderComponent)
                 {
-                    cb.DrawRenderer(FPRenderComponent.DefaultUnityMeshRenderer, FPRenderComponent.DefaultUnityMeshRenderer.sharedMaterial, 0);
+                    //cb.DrawRenderer(FPRenderComponent.DefaultUnityMeshRenderer, FPRenderComponent.DefaultUnityMeshRenderer.sharedMaterial, 0);
 
                 }
 
@@ -80,11 +80,11 @@ namespace GCO.FP
                 }
 #endif
 
-                renderContext.ExecuteCommandBuffer(cb);                 //Alex: Execute commands in queue.
+                //renderContext.ExecuteCommandBuffer(cb);                 //Alex: Execute commands in queue.
             }
 
             renderContext.Submit();                                     //Alex: Submit changes.
-            cb.Release();                                               //Alex: Release obtained CommandBuffer.
+            //cb.Release();                                               //Alex: Release obtained CommandBuffer.
         }
     }
 }

@@ -11,4 +11,12 @@ public static class Operations{
         B = C;
     }
 
+
+    //static void Call()
+    //{
+    //    int var1, var2;
+    //    var1 = var2 = 9;
+    //    Operations.swap<int>(ref var1, ref var2);
+    //}
+
 }
