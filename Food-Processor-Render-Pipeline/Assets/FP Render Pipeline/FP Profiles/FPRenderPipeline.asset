@@ -11,4 +11,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46440a9117da5654ba71f0c60e79e029, type: 3}
   m_Name: FPRenderPipeline
   m_EditorClassIdentifier: 
-  color: {r: 0, g: 0, b: 0, a: 1}
+  BackgroundColor: {r: 0, g: 0, b: 0, a: 0}
+  AmbientColor: {r: 0, g: 0, b: 0, a: 0}

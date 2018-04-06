@@ -8,20 +8,13 @@ using UnityEngine.Experimental.Rendering;
 
 namespace GCO.FP
 {
-	//Rendering Pipeline
     public class FPRenderPipeline : RenderPipeline
     {
-		//Alex: A reference to an instance of a pipeline asset
-        //Tyler: A reference to the asset that created this instance Factory-style
         private FPRenderPipelineAsset AssetReference;
 
-		//Alex: Consturctor that gets a reference to an asset passed in.
-        //Tyler: Constructor that gets only the creating asset reference passed in.
         public FPRenderPipeline(FPRenderPipelineAsset FPPipelineAsset)
         {
-			//Alex: Store a pointer to the asset
-            //Tyler: Initialize the asset reference with no null checking.
-            AssetReference = FPPipelineAsset; //Alex: shouldn't be null
+            AssetReference = FPPipelineAsset;
 #if UNITY_EDITOR
             SupportedRenderingFeatures.active = new SupportedRenderingFeatures()
             {
@@ -36,7 +29,6 @@ namespace GCO.FP
                 supportedMixedLightingModes = SupportedRenderingFeatures.LightmapMixedBakeMode.None,//indirect only later
             };
 #endif
-
         }
 
         public override void Dispose()
@@ -47,28 +39,27 @@ namespace GCO.FP
 #endif
         }
 
-        //Alex: Draws to screen?
-        //Tyler: Draws to whatever the camera is drawing to (which can be set in the editor.
         public override void Render(ScriptableRenderContext renderContext, Camera[] cameras)
         {
-            //Tyler: Performs sanity checks (not well documented)
             base.Render(renderContext, cameras);
 
-            //Tyler: Obtains a CommandBuffer instance from the pool to save on GC pressure.
-            //CommandBuffer cb = CommandBufferPool.Get(); //Alex: Obtain CommandBuffer queue from pool.
+            var cmd = CommandBufferPool.Get();
+            cmd.SetGlobalColor("_ambientColor", AssetReference.AmbientColor);
+            renderContext.ExecuteCommandBuffer(cmd);
+            CommandBufferPool.Release(cmd);
 
-            //Alex: Call render for a camera?
-            //Tyler: Process rendering for each camera in the order provided.
             foreach (Camera camera in cameras)
             {
                 //Tyler: Sets up Unity's internal camera variables (not well documented) and binds the render target to the camera's target.
-                renderContext.SetupCameraProperties(camera);                 //Alex: Does some interesting things(?)
-                //cb.ClearRenderTarget(true, true, AssetReference.Color); //Alex: Set Color.  Tyler: Clear background color to the color in the FP Asset and clear out the depth buffer.
+                renderContext.SetupCameraProperties(camera);
 
-                foreach(FPRenderComponent FPRenderComponent in FPRenderPipelineAsset.ListOfRenderComponent)
+                if (camera.cameraType == CameraType.Preview)
                 {
-                    //cb.DrawRenderer(FPRenderComponent.DefaultUnityMeshRenderer, FPRenderComponent.DefaultUnityMeshRenderer.sharedMaterial, 0);
-
+                    DrawPreviewCamera(renderContext, camera);
+                }
+                else
+                {
+                    DrawSimpleForward(renderContext, camera);
                 }
 
 #if UNITY_EDITOR
@@ -79,12 +70,59 @@ namespace GCO.FP
                     ScriptableRenderContext.EmitWorldGeometryForSceneView(camera);
                 }
 #endif
+            } //end foreach
+            renderContext.Submit();
+        }
 
-                //renderContext.ExecuteCommandBuffer(cb);                 //Alex: Execute commands in queue.
+        void DrawPreviewCamera(ScriptableRenderContext context, Camera camera)
+        {
+            var cmd = CommandBufferPool.Get();
+            cmd.ClearRenderTarget(true, true, AssetReference.BackgroundColor);
+            ScriptableCullingParameters scp = new ScriptableCullingParameters();
+            CullResults.GetCullingParameters(camera, out scp);
+            var cr = CullResults.Cull(ref scp, context);
+            VisibleLight? bestLight = null;
+            foreach (var light in cr.visibleLights)
+            {
+                if (light.lightType == LightType.Directional)
+                {
+                    if (bestLight == null || bestLight?.finalColor.grayscale < light.finalColor.grayscale)
+                    {
+                        bestLight = light;
+                    }
+                }
             }
+            if (bestLight != null)
+            {
+                var bl = bestLight ?? default(VisibleLight);
+                cmd.SetGlobalColor("_LightColor", bl.finalColor);
+                cmd.SetGlobalVector("_LightDirection", bl.localToWorld.MultiplyVector(Vector3.forward));
+            }
+            context.ExecuteCommandBuffer(cmd);
+            CommandBufferPool.Release(cmd);
+            DrawRendererSettings drs = new DrawRendererSettings(camera, new ShaderPassName("Base"));
+            FilterRenderersSettings frs = new FilterRenderersSettings(true)
+            {
+                renderQueueRange = RenderQueueRange.all,
+            };
+            context.DrawRenderers(cr.visibleRenderers, ref drs, frs);
+        }
 
-            renderContext.Submit();                                     //Alex: Submit changes.
-            //cb.Release();                                               //Alex: Release obtained CommandBuffer.
+        void DrawSimpleForward(ScriptableRenderContext context, Camera camera)
+        {
+            var cmd = CommandBufferPool.Get();
+            cmd.ClearRenderTarget(true, true, AssetReference.BackgroundColor);
+            if (FPRenderPipelineAsset.mainDirectionalLight != null)
+            {
+                cmd.SetGlobalColor("_LightColor", FPRenderPipelineAsset.mainDirectionalLight.color * FPRenderPipelineAsset.mainDirectionalLight.intensity);
+                cmd.SetGlobalVector("_LightDirection", FPRenderPipelineAsset.mainDirectionalLight.transform.TransformDirection(Vector3.forward));
+            }
+            foreach (FPRenderer fpRenderer in FPRenderPipelineAsset.ListOfRenderers)
+            {
+                fpRenderer.RenderVariableBatch(cmd, fpRenderer);
+            }
+            context.ExecuteCommandBuffer(cmd);
+            CommandBufferPool.Release(cmd);
         }
     }
 }
